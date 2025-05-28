@@ -1,0 +1,68 @@
+---
+title: "Chart Salary"
+format: pdf
+editor: visual
+---
+
+```{r}
+
+Salary1 <- salary1[c(2,3),c(1,2)]
+colnames(Salary1) <- c("Loại lao động","10")
+Salary2 <- salary2[c(2,3),c(1,2)]
+colnames(Salary2) <- c("Loại lao động","30")
+Salary3 <- salary3[c(2,3),c(1,2)]
+colnames(Salary3) <- c("Loại lao động","50")
+Salary <- bind_cols(Salary1,Salary2,Salary3)
+Salary <- Salary[c(1,2),c(1,2,4,6)]
+print(Salary) 
+
+# Chuyển đổi dữ liệu từ dạng rộng sang dạng dài bằng pivot_longer
+salary_long <- Salary %>%
+  pivot_longer(cols = starts_with(c("10","30","50")),  # Chọn các cột có tên bắt đầu bằng "SalaryChange"
+               names_to = "SalaryType",  # Tạo cột "SalaryType"
+               values_to = "Salary")  # Tạo cột "Salary"
+colnames(salary_long)[1] <- "Chú Thích"
+print(salary_long)
+
+# Vẽ biểu đồ cột với ggplot
+# Sửa mã của bạn để sử dụng geom_bar với position = "dodge" và các điều chỉnh khác
+ggplot(salary_long, aes(x = SalaryType, y = Salary, fill = `Chú Thích`)) +
+  annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 10, fill = "lightcoral", alpha = 0.1) +
+  geom_bar(stat = "identity", position = position_dodge(width=0.5),width=0.05) +  # position dodge để các cột không chồng lên nhau
+  geom_text(aes(label = round(Salary, 1)),           # Thêm giá trị lên cột, làm tròn 1 chữ số
+            hjust = 0.5,                            # Căn chỉnh ngang
+            vjust = ifelse(salary_long$`Salary` > 0, - 0.5, 1.8),                       # Điều chỉnh vị trí của giá trị (cách cột một chút)
+            color = "black",                        # Màu sắc của số
+            size = 2.5,
+            position = position_dodge(width = 0.5)) +
+  
+  labs(
+    x = "Kịch Bản(%)",
+    y = "(%)"
+  ) +
+  geom_point(
+      aes(
+        x = `SalaryType`,
+        y = `Salary`,
+        color = `Chú Thích`
+      ),
+      size = 3,
+      shape = 16,
+      position = position_dodge(width = 0.5),
+      show.legend = FALSE
+    ) +
+  coord_cartesian(ylim = c(-50, 0)) +
+  theme_stata(base_family = "serif") +
+  theme(
+    legend.text = element_text(size = 10),     # Giảm kích thước chữ trong legend
+    legend.title = element_text(size = 0), 
+    legend.key.size = unit(0.25, "cm"),   
+    axis.text.x = element_text(face = "bold"),  # In đậm giá trị trên trục x
+    axis.text.y = element_text(face = "bold",hjust=0.5),  # In đậm giá trị trên trục y
+    plot.title = element_text(face = "bold", hjust = 0.5),  # Tiêu đề in đậm và căn giữa
+    plot.margin = margin(t = 20, b = 15, l = 20, r = 35),  # Dịch chuyển biểu đồ xuống dưới
+    panel.grid.major = element_blank(),  # Ẩn lưới chính
+    panel.grid.minor = element_blank()   # Ẩn lưới phụ
+  ) 
+
+```

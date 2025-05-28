@@ -1,0 +1,39 @@
+---
+title: "Chart welfare"
+format: pdf
+editor: visual
+---
+
+```{r}
+
+Welfare2 <- select(welfare2, -EV)   
+Welfare3 <- select(welfare3, -EV)  
+Welfare <- bind_cols(welfare1,Welfare2,Welfare3)
+Welfare <- Welfare[1,2:4]
+print(Welfare)
+# Biến đổi dữ liệu sang dạng dài
+welfare_long <- Welfare %>%
+  pivot_longer(cols = everything(), names_to = "Kichban", values_to = "value")
+
+ggplot(welfare_long, aes(x = Kichban, y = value, fill = Kichban)) +
+  geom_col(fill="lightcoral",show.legend = FALSE) +
+  labs(
+    x = "Kịch Bản(%)",
+    y = "Giá trị Welfare (Triệu USD)"
+  )  + geom_text(aes(label = round(value, 1)),  # Thêm giá trị lên cột, làm tròn 1 chữ số
+            hjust=0.5,
+            vjust = ifelse(welfare_long$`value` > 0, - 0.5, 1.1),
+            color = "black",              # Màu sắc của số
+            size = 3) +
+    theme_stata(base_family ="serif") +
+    theme(
+      axis.text.x = element_text(face = "bold"),  # In đậm giá trị trên trục x
+      axis.text.y = element_text(face = "bold", hjust=0.5),  # In đậm giá trị trên trục y
+      plot.title = element_text(face = "bold", hjust = 0.5),  # Tiêu đề in đậm và căn giữa
+      plot.margin = margin(t = 20, b = 15, l = 20, r = 20), 
+      panel.grid.major = element_blank(),  # Ẩn lưới chính
+      panel.grid.minor = element_blank()   # Ẩn lưới phụ
+    ) 
+      
+
+```

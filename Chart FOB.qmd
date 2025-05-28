@@ -1,0 +1,63 @@
+---
+title: "Chart FOB"
+format: pdf
+editor: visual
+---
+
+```{r}
+
+fob1 <- FOB1[,c(1,2)]
+fob1$Kich_Ban <- "10"
+colnames(fob1) <- c("Nghành","Sự Thay Đổi Trong Mức Giá","Kịch Bản")
+fob2 <- FOB2[,c(1,2)]
+fob2$Kich_Ban <- "30"
+colnames(fob2) <- c("Nghành","Sự Thay Đổi Trong Mức Giá","Kịch Bản")
+fob3 <- FOB3[,c(1,2)]
+fob3$Kich_Ban <- "50"
+colnames(fob3) <- c("Nghành","Sự Thay Đổi Trong Mức Giá","Kịch Bản")
+FOB <- bind_rows(fob1,fob2,fob3)
+print(FOB)
+FOB$color_list <- ifelse(FOB$`Sự Thay Đổi Trong Mức Giá`>0,"red","green")
+
+
+order_of_names <- c("Sản Xuất Công Nghiệp Nặng", "Sản Xuất Hàng Tiêu Dùng Nhẹ","Dệt May và Sản Phẩm Dệt","Gỗ", "Thép và Ô tô","Thực Phẩm Chế Biến","Khoáng Sản","Vận Tải và Truyền Thông","Tiện Ích và Xây Dựng","Thịt và Chăn Nuôi","Khai Thác Tài Nguyên","Ngũ Cốc và Cây Trồng","Các Dịch Vụ Khác")
+FOB$Nghành <- factor(FOB$Nghành, levels = order_of_names)
+# Sửa mã của bạn để sử dụng geom_bar với position = "dodge" và các điều chỉnh khác
+ggplot(FOB, aes(x = `Kịch Bản`, y = `Sự Thay Đổi Trong Mức Giá`, fill = `Nghành`)) +
+  annotate("rect", xmin = -Inf, xmax = Inf, ymin = 0, ymax = Inf, fill = "lightgreen", alpha = 0.1) +
+  annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 0, fill = "lightcoral", alpha = 0.1) +
+  geom_bar(stat = "identity", position = position_dodge(width=0.9), width = 0.2) +
+  geom_text(aes(label = round(`Sự Thay Đổi Trong Mức Giá`, 1)),           # Thêm giá trị lên cột, làm tròn 1 chữ số
+            position = position_dodge(width = 0.9),                        # Điều chỉnh width của dodge cho phù hợp
+            hjust = 0.5,                                                     # Căn chỉnh ngang
+            vjust = ifelse(FOB$`Sự Thay Đổi Trong Mức Giá` > 0, -1.5, 1.8), # Điều chỉnh vị trí giá trị, cho giá trị dương và âm
+            color = "black",                                                 # Màu sắc của số
+            size = 1.9) +
+  geom_point(
+      aes(
+        x = `Kịch Bản`,
+        y = `Sự Thay Đổi Trong Mức Giá`,
+        color = `Nghành`
+      ),
+      size = 2,
+      shape = 16,
+      position = position_dodge(width = 0.9),
+      show.legend = FALSE
+    ) +
+  coord_cartesian(ylim = c(-30, 15)) +
+  theme_stata(base_family = "serif") + 
+  labs(
+    x = "Kịch Bản(%)",
+    y = "(%)"
+  ) +
+  theme(
+    legend.text = element_text(size = 7),     # Giảm kích thước chữ trong legend
+    legend.title = element_text(size = 0), 
+    legend.key.size = unit(0.25, "cm"),   
+    axis.text.x =  element_text(face = "bold"), 
+    axis.text.y = element_text(face = "bold",hjust=0.5),  # In đậm giá trị trên trục y
+    plot.title = element_text(face = "bold", hjust = 0.5),  # Tiêu đề in đậm và căn giữa
+    plot.margin = margin(t = 20, b = 15, l = 10, r = 30),  # Dịch chuyển biểu đồ xuống dưới
+  )
+
+```

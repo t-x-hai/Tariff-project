@@ -1,0 +1,57 @@
+---
+title: "Chart Domsales"
+format: pdf
+editor: visual
+---
+
+```{r}
+
+Domsales1 <- domsales1[,c(1,2)]
+Domsales2 <- domsales2[,c(1,2)]
+Domsales3 <- domsales3[,c(1,2)]
+Domsales <- bind_cols(Domsales1,Domsales2[2],Domsales3[2])
+Domsales_long <- Domsales %>% pivot_longer(cols = 2:4, names_to = "KichBan", values_to = "Sự thay đổi trong sản lượng bán hàng nội địa")
+colnames(Domsales_long)[1] <- "Nghành"
+print(Domsales_long)
+
+order_of_names <- c("Sản Xuất Công Nghiệp Nặng", "Sản Xuất Hàng Tiêu Dùng Nhẹ","Dệt May và Sản Phẩm Dệt","Gỗ", "Thép và Ô tô","Thực Phẩm Chế Biến","Khoáng Sản","Vận Tải và Truyền Thông","Tiện Ích và Xây Dựng","Thịt và Chăn Nuôi","Khai Thác Tài Nguyên","Ngũ Cốc và Cây Trồng","Các Dịch Vụ Khác")
+Domsales_long$Nghành <- factor(Domsales_long$Nghành, levels = order_of_names)
+# Sửa mã của bạn để sử dụng geom_bar với position = "dodge" và các điều chỉnh khác
+ggplot(Domsales_long, aes(x = KichBan, y = `Sự thay đổi trong sản lượng bán hàng nội địa`, fill = `Nghành`)) +
+  annotate("rect", xmin = -Inf, xmax = Inf, ymin = 0, ymax = Inf, fill = "lightgreen", alpha = 0.1) +
+  annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 0, fill = "lightcoral", alpha = 0.1) +
+  geom_bar(stat = "identity", position = position_dodge(width=0.9), width = 0.2) +  # position dodge để các cột không chồng lên nhau
+  geom_text(aes(label = round(`Sự thay đổi trong sản lượng bán hàng nội địa`, 1)),   
+            position = position_dodge(width = 0.9), # Thêm giá trị lên cột, làm tròn 1 chữ số
+            hjust = 0.5,                            # Căn chỉnh ngang
+            vjust = ifelse(Domsales_long$`Sự thay đổi trong sản lượng bán hàng nội địa` > 0, - 1.5, 1.8),  # Điều chỉnh vị trí của giá trị (cách cột một chút)
+            color = "black",                        # Màu sắc của số
+            size = 2) +
+  labs(
+    x = "Kịch Bản(%)", 
+    y = "(%)"
+  ) +
+  geom_point(
+      aes(
+        x = `KichBan`,
+        y = `Sự thay đổi trong sản lượng bán hàng nội địa`,
+        color = `Nghành`
+      ),
+      size = 2,
+      shape = 16,
+      position = position_dodge(width = 0.9),
+      show.legend = FALSE
+    ) +
+  coord_cartesian(ylim = c(-60, 60)) +
+  theme_stata(base_family = "serif") +
+  theme(
+    axis.text.x = element_text(face = "bold"),
+    axis.text.y = element_text(face = "bold",hjust=0.5),
+    legend.text = element_text(size = 7),     # Giảm kích thước chữ trong legend
+    legend.title = element_text(size = 0), 
+    legend.key.size = unit(0.25,"cm"),
+    plot.margin = margin(t = 20, b = 15, l = 10, r = 30)
+  )
+
+
+```

@@ -1,0 +1,33 @@
+---
+title: "Chart RealGDP"
+format: pdf
+editor: visual
+---
+
+```{r}
+
+Realgdp1 <- realgdp1[1,c(1,2)]
+Realgdp2 <- realgdp2[1,c(1,2)]
+Realgdp3 <- realgdp3[1,c(1,2)]
+Realgdp <- bind_cols(Realgdp1,Realgdp2[2],Realgdp3[2])
+Realgdp_long <- Realgdp %>% pivot_longer(cols=2:4, names_to = "Kichban",values_to = "Su thay doi san luong thuc")
+print(Realgdp_long)
+
+# Vẽ biểu đồ cột với ggplot
+ggplot(Realgdp_long, aes(x = `Kichban`, y = `Su thay doi san luong thuc`, fill = `Kichban`)) +
+  geom_col(fill= "lightcoral",show.legend = FALSE) +
+  labs(
+    x = "Kịch Bản(%)",
+    y = "(%)"
+  )  + geom_text(aes(label = round(`Su thay doi san luong thuc`, 1)), 
+            position = position_dodge(width = 0.9),# Thêm giá trị lên cột, làm tròn 1 chữ số
+            hjust = 0.5,                            # Căn chỉnh ngang
+            vjust = ifelse(Realgdp_long$`Su thay doi san luong thuc` > 0, - 0.5, 1.1),                             # Điều chỉnh vị trí của giá trị (cách cột một chút)
+            color = "black",                        # Màu sắc của số
+            size = 3) +
+  theme_stata(base_family = "serif")+
+  theme( 
+    axis.text.x = element_text(face = "bold"),
+    axis.text.y = element_text(face = "bold",hjust=0.5))
+
+```

@@ -1,0 +1,42 @@
+---
+title: "Chart Deflator"
+format: html
+editor: visual
+---
+
+```{r}
+
+Deflator1 <- deflator1[1, -c(3, 4, 5)]
+Deflator2 <- deflator2[1, -c(3, 4, 5)]
+Deflator3 <- deflator3[1, -c(3, 4, 5)]
+Deflator <- bind_cols(Deflator1,Deflator2,Deflator3)
+Deflator <- Deflator[,c(2,4,6)]
+print(Deflator)
+
+# Biến đổi dữ liệu sang dạng dài
+Deflator_long <- Deflator %>%
+  pivot_longer(cols = everything(), names_to = "Kichban", values_to = "value")
+Deflator_long$fill_color <- ifelse(Deflator_long$value > 0, "lightgreen", "lightcoral")
+# Vẽ biểu đồ cột với ggplot
+ggplot(Deflator_long, aes(x = Kichban, y = value, fill = fill_color)) +
+  geom_col(show.legend = FALSE) +
+  theme_minimal() +
+  labs(
+    x = "Kịch Bản(%)",
+    y = "(%)"
+  )  + geom_text(aes(label = round(value, 1)),  # Thêm giá trị lên cột, làm tròn 1 chữ số
+            hjust=0.5,
+            color = "black",              # Màu sắc của số
+            size = 2.5,
+            vjust = ifelse(Deflator_long$`value` > 0, - 0.5, 1.1)) +
+  theme_stata(base_family = "serif")+
+  theme(
+      axis.text.x = element_text(face = "bold"),  # In đậm giá trị trên trục x
+      axis.text.y = element_text(face = "bold",hjust=0.5),  # In đậm giá trị trên trục y
+      plot.title = element_text(face = "bold", hjust = 0.5),  # Tiêu đề in đậm và căn giữa
+      plot.margin = margin(t = 20, b = 15, l = 20, r = 20),  # Dịch chuyển biểu đồ xuống dưới
+      panel.grid.major = element_blank(),  # Ẩn lưới chính
+      panel.grid.minor = element_blank()   # Ẩn lưới phụ
+    ) 
+
+```

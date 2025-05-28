@@ -1,0 +1,68 @@
+---
+title: "Nhập thư viện và import data"
+format: pdf
+editor: visual
+---
+
+```{r}
+#| message: false
+#| warning: falsewindowsFonts() 
+#| 
+library(extrafont)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(ragg)
+knitr::opts_chunk$set(dev = "ragg_png")
+library(readxl)
+library("googlesheets4")
+library(ggthemes)
+file_path <- "C:/Users/Dell/Downloads/Data bien Tariff.xlsx"
+options(scipen = 10)
+```
+
+```{r}
+
+#| message: false
+#| warning: false
+# Welfare
+welfare1 <- read_excel(file_path, sheet="WelfareT1-10pct")
+welfare2 <- read_excel(file_path, sheet="WelfareT1-30pct")
+welfare3 <- read_excel(file_path, sheet="WelfareT1-50pct")
+# Price
+deflator1 <- read_excel(file_path,sheet="DeflatorT1-10pct")
+deflator2 <- read_excel(file_path,sheet="DeflatorT1-30pct")
+deflator3 <- read_excel(file_path,sheet="DeflatorT1-50pct")
+
+salary1 <- read_excel(file_path, sheet="SalaryT1-10pct")
+salary2 <- read_excel(file_path, sheet="SalaryT1-30pct")
+salary3 <- read_excel(file_path, sheet="SalaryT1-50pct")
+
+FOB1 <- read_excel(file_path, sheet="FOBT1-10pct")
+FOB2 <- read_excel(file_path, sheet="FOBT1-30pct")
+FOB3 <- read_excel(file_path, sheet="FOBT1-50pct")
+# Trade 
+exports1 <- read_excel(file_path, sheet="ExportsT1-10pct")
+exports2 <- read_excel(file_path, sheet="ExportsT1-30pct")
+exports3 <- read_excel(file_path, sheet="ExportsT1-50pct")
+
+imports1 <- read_excel(file_path, sheet="ImportsT1-10pct")
+imports2 <- read_excel(file_path, sheet="ImportsT1-30pct")
+imports3 <- read_excel(file_path, sheet="ImportsT1-50pct")
+# Output
+realgdp1 <- read_excel(file_path, sheet="RealGDPT1-10pct")
+realgdp2 <- read_excel(file_path, sheet="RealGDPT1-30pct")
+realgdp3 <- read_excel(file_path, sheet="RealGDPT1-50pct")
+
+domsales1 <- read_excel(file_path,sheet="DomsalesT1-10pct")
+domsales2 <- read_excel(file_path,sheet="DomsalesT1-30pct")
+domsales3 <- read_excel(file_path,sheet="DomsalesT1-50pct")
+
+output1 <- read_excel(file_path, sheet="OutputT1-10pct")
+output2 <- read_excel(file_path, sheet="OutputT1-30pct")
+output3 <- read_excel(file_path, sheet="OutputT1-50pct")
+
+print(exports1)
+print(exports2)
+print(exports3)
+```

@@ -1,0 +1,178 @@
+---
+title: "Chart Exports - Imports"
+format: pdf
+editor: visual
+---
+
+```{r}
+
+Exports1 <- exports1[,c(1,3,4,5,6)]
+Exports1$Kichban <- "t1"
+Exports2 <- exports2[,c(1,3,4,5,6)]
+Exports2$Kichban <- "t2"
+Exports3 <- exports3[,c(1,3,4,5,6)]
+Exports3$Kichban <- "t3"
+colnames(Exports1)[1] <- "Nghành"
+colnames(Exports2)[1] <- "Nghành"
+colnames(Exports3)[1] <- "Nghành"
+
+Exports1_long <- Exports1 %>%
+  pivot_longer(cols = 2:5,  # Chọn các cột có tên bắt đầu bằng "SalaryChange"
+               names_to = "Chú Thích",  # Tạo cột "SalaryType"
+               values_to = "Sự thay đổi trong xuất khẩu")  # Tạo cột "Salary"
+Exports2_long <- Exports2 %>%
+  pivot_longer(cols = 2:5,  # Chọn các cột có tên bắt đầu bằng "SalaryChange"
+               names_to = "Chú Thích",  # Tạo cột "SalaryType"
+               values_to = "Sự thay đổi trong xuất khẩu")  # Tạo cột "Salary"
+Exports3_long <- Exports3 %>%
+  pivot_longer(cols = 2:5,  # Chọn các cột có tên bắt đầu bằng "SalaryChange"
+               names_to = "Chú Thích",  # Tạo cột "SalaryType"
+               values_to = "Sự thay đổi trong xuất khẩu")  # Tạo cột "Salary"
+Exports1_long$`Chú Thích` <- factor(Exports1_long$`Chú Thích`, 
+                                    levels = c("Mỹ", "Trung Quốc", "BRICS", "Phần Còn Lại"))
+
+Exports2_long$`Chú Thích` <- factor(Exports2_long$`Chú Thích`, 
+                                    levels = c("Mỹ", "Trung Quốc", "BRICS", "Phần Còn Lại"))
+
+Exports3_long$`Chú Thích` <- factor(Exports3_long$`Chú Thích`, 
+                                    levels = c("Mỹ", "Trung Quốc", "BRICS", "Phần Còn Lại"))
+
+order_of_names <- c("Sản Xuất Công Nghiệp Nặng", "Sản Xuất Hàng Tiêu Dùng Nhẹ","Dệt May và Sản Phẩm Dệt","Gỗ", "Thép và Ô tô","Thực Phẩm Chế Biến","Khoáng Sản","Vận Tải và Truyền Thông","Tiện Ích và Xây Dựng","Thịt và Chăn Nuôi","Khai Thác Tài Nguyên","Ngũ Cốc và Cây Trồng","Các Dịch Vụ Khác")
+Exports1_long$Nghành <- factor(Exports1_long$Nghành, levels = order_of_names)
+Exports2_long$Nghành <- factor(Exports2_long$Nghành, levels = order_of_names)
+Exports3_long$Nghành <- factor(Exports3_long$Nghành, levels = order_of_names)
+
+plot_exports_change <- function(data) { 
+  ggplot(data, aes(x = `Nghành`, y = `Sự thay đổi trong xuất khẩu`, fill = `Nghành`)) +
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = 0, ymax = Inf, fill = "lightgreen", alpha = 0.1) +
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 0, fill = "lightcoral", alpha = 0.1) +
+    geom_bar(stat = "identity", position = "dodge", width = 0.2) +
+    facet_grid(. ~ `Chú Thích`) +
+    geom_point(
+      aes(
+        x = `Nghành`,
+        y = `Sự thay đổi trong xuất khẩu`,
+        color = `Nghành`
+      ),
+      size = 2,
+      shape = 16,
+      position = position_dodge(width = 0),
+      show.legend = FALSE
+    ) +
+    geom_text(aes(label = round(`Sự thay đổi trong xuất khẩu`, 1)),
+              hjust = 0.5,
+              vjust = ifelse(data$`Sự thay đổi trong xuất khẩu` > 0, -1, 1.4),
+              color = "black",
+              size = 1.5) +
+    coord_cartesian(ylim = c(-350, 400)) +  
+    theme_stata(base_family = "serif") +
+    guides(fill = guide_legend(label = NULL)) +
+    labs(
+      x = "", 
+      y = "(%)"
+    ) +
+    theme(
+      axis.line = element_line(color = "grey70"),
+      axis.ticks.y = element_blank(),
+      axis.ticks.x = element_blank(), 
+      legend.box.background = element_rect(color = "grey70", size = 0.5, fill = NA),
+      legend.background = element_blank(),
+      legend.text = element_text(size = 7),
+      legend.title = element_text(size = 0), 
+      legend.key.size = unit(0.25, "cm"),   
+      axis.text.x = element_blank(),
+      axis.text.y = element_text(hjust = 0.5), 
+      plot.title = element_text(face = "bold", hjust = 0.5),
+      plot.margin = margin(t = 20, b = 15, l = 10, r = 30)
+    )
+}
+plot_exports_change(Exports1_long)
+plot_exports_change(Exports2_long)
+plot_exports_change(Exports3_long)
+```
+
+```{r}
+
+Imports1 <- imports1[,c(1,3,4,5,6)]
+Imports1$Kichban <- "t1"
+Imports2 <- imports2[,c(1,3,4,5,6)]
+Imports2$Kichban <- "t2"
+Imports3 <- imports3[,c(1,3,4,5,6)]
+Imports3$Kichban <- "t3"
+colnames(Imports1)[1] <- "Nghành"
+colnames(Imports2)[1] <- "Nghành"
+colnames(Imports3)[1] <- "Nghành"
+
+Imports1_long <- Imports1 %>%
+  pivot_longer(cols = 2:5,  # Chọn các cột có tên bắt đầu bằng "SalaryChange"
+               names_to = "Chú Thích",  # Tạo cột "SalaryType"
+               values_to = "Sự thay đổi trong nhập khẩu")  # Tạo cột "Salary"
+Imports2_long <- Imports2 %>%
+  pivot_longer(cols = 2:5,  # Chọn các cột có tên bắt đầu bằng "SalaryChange"
+               names_to = "Chú Thích",  # Tạo cột "SalaryType"
+               values_to = "Sự thay đổi trong nhập khẩu")  # Tạo cột "Salary"
+Imports3_long <- Imports3 %>%
+  pivot_longer(cols = 2:5,  # Chọn các cột có tên bắt đầu bằng "SalaryChange"
+               names_to = "Chú Thích",  # Tạo cột "SalaryType"
+               values_to = "Sự thay đổi trong nhập khẩu")  # Tạo cột "Salary"
+
+Imports1_long$`Chú Thích` <- factor(Imports1_long$`Chú Thích`, 
+                                    levels = c("Mỹ", "Trung Quốc", "BRICS", "Phần Còn Lại"))
+Imports2_long$`Chú Thích` <- factor(Imports2_long$`Chú Thích`, 
+                                    levels = c("Mỹ", "Trung Quốc", "BRICS", "Phần Còn Lại"))
+Imports3_long$`Chú Thích` <- factor(Imports3_long$`Chú Thích`, 
+                                    levels = c("Mỹ", "Trung Quốc", "BRICS", "Phần Còn Lại"))
+order_of_names <- c("Sản Xuất Công Nghiệp Nặng", "Sản Xuất Hàng Tiêu Dùng Nhẹ","Dệt May và Sản Phẩm Dệt","Gỗ", "Thép và Ô tô","Thực Phẩm Chế Biến","Khoáng Sản","Vận Tải và Truyền Thông","Tiện Ích và Xây Dựng","Thịt và Chăn Nuôi","Khai Thác Tài Nguyên","Ngũ Cốc và Cây Trồng","Các Dịch Vụ Khác")
+Imports1_long$Nghành <- factor(Imports1_long$Nghành, levels = order_of_names)
+Imports2_long$Nghành <- factor(Imports2_long$Nghành, levels = order_of_names)
+Imports3_long$Nghành <- factor(Imports3_long$Nghành, levels = order_of_names)
+
+plot_imports_change <- function(data) { 
+  ggplot(data, aes(x = `Nghành`, y = `Sự thay đổi trong nhập khẩu`, fill = `Nghành`)) +
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = 0, ymax = Inf, fill = "lightgreen", alpha = 0.1) +
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 0, fill = "lightcoral", alpha = 0.1) +
+    geom_bar(stat = "identity", position = "dodge", width = 0.2) +
+    facet_grid(. ~ `Chú Thích`) +
+    geom_point(
+      aes(
+        x = `Nghành`,
+        y = `Sự thay đổi trong nhập khẩu`,
+        color = `Nghành`
+      ),
+      size = 2,
+      shape = 16,
+      position = position_dodge(width = 0),
+      show.legend = FALSE
+    ) +
+    geom_text(aes(label = round(`Sự thay đổi trong nhập khẩu`, 1)),
+              hjust = 0.5,
+              vjust = ifelse(data$`Sự thay đổi trong nhập khẩu` > 0, -1, 1.8),
+              color = "black",
+              size = 1.5) +
+    coord_cartesian(ylim = c(-100, 120)) +  
+    theme_stata(base_family = "serif") +
+    guides(fill = guide_legend(label = NULL)) +
+    labs(
+      x = "", 
+      y = "(%)"
+    ) +
+    theme(
+      axis.line = element_line(color = "grey70"),
+      axis.ticks.y = element_blank(),
+      axis.ticks.x = element_blank(), 
+      legend.box.background = element_rect(color = "grey70", size = 0.5, fill = NA),
+      legend.background = element_blank(),
+      legend.text = element_text(size = 7),
+      legend.title = element_text(size = 0), 
+      legend.key.size = unit(0.25, "cm"),   
+      axis.text.x = element_blank(),
+      axis.text.y = element_text(hjust = 0.5), 
+      plot.title = element_text(face = "bold", hjust = 0.5),
+      plot.margin = margin(t = 20, b = 15, l = 10, r = 30)
+    )
+}
+plot_imports_change(Imports1_long)
+plot_imports_change(Imports2_long)
+plot_imports_change(Imports3_long)
+
+```
